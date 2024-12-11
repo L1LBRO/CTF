@@ -48,25 +48,25 @@ function print_message() {
     apt install openssh-server -y && apt install nginx -y && apt install curl -y && apt install tcpdump -y && apt install rsyslog -y && apt install ufw -y && apt install vsftpd -y && apt install mariadb-server -y
 
 # MODIFICACIÓN DEL FICHERO SSH PARA HACERLO PARECER VULNERABLE
-print_message "Modificando configuraciones de SSH para simular vulnerabilidades..."
-sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
+    print_message "Modificando configuraciones de SSH para simular vulnerabilidades..."
+    sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+    sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+    sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
 
 # REINICIO DEL SERVICIO SSH
-print_message "Reiniciando el servicio SSH..."
-/etc/init.d/ssh restart
+    print_message "Reiniciando el servicio SSH..."
+    /etc/init.d/ssh restart
 
-# Crear usuarios con contraseñas débiles
-print_message "Creando usuarios con contraseñas débiles..."
-touch /etc/passwords.txt
-useradd -m user1
-echo "user:P@ssw0rd!" | chpasswd
-echo "user:P@ssw0rd!" >> /etc/passwords.txt
+# CREACIÓN DE USUARIOS Y CONTRASEÑAS INSEGURAS
+    print_message "Creando usuarios con contraseñas débiles..."
+    touch /etc/passwords.txt
+    useradd -m user1
+    echo "user:P@ssw0rd!" | chpasswd
+    echo "user:P@ssw0rd!" >> /etc/passwords.txt
 
-# Configurar el servidor web
+# CONFIGURACIÓN DEL SERVICIO WEB
 print_message "Configurando el servidor web..."
-echo "<h1>Welcome to this web server</h1>" >> /var/www/html/index.html
+curl 
 /etc/init.d/nginx restart
 
 # Configurar FTP
