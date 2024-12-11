@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - CyberSecure Solutions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>About Us</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="clients.html">Clients</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.php">Login</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section>
+            <h2>Who We Are</h2>
+            <p>CyberSecure Solutions was founded with the mission to provide state-of-the-art cybersecurity services. Our expert team is dedicated to safeguarding your digital assets.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 CyberSecure Solutions. All rights reserved.</p>
+    </footer>
+</body>
+</html>
