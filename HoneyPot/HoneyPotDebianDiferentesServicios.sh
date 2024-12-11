@@ -76,55 +76,132 @@ function print_message() {
     git clone https://github.com/L1LBRO/CTF.git
     mv CTF/HoneyPot/HoneyPotPage /var/www/html/
     rm -r CTF
+    print_message "Servicio web en correcto funcionamiento en el Puerto 80..."
     
 # REINICIO DEL SERVICIO WEB
     print_message "Reinicio de NGINX..."
     /etc/init.d/nginx restart
+    print_message "Servicio reiniciado correctamente..."
 
 # CONFIGURAR SERVIDOR FTP
     print_message "Configurando el servidor FTP..."
     sed -i -e 's/anonymous_enable=NO/anonymous_enable=YES/g' /etc/vsftpd.conf
     sed -i -e 's/#write_enable=YES/write_enable=YES/g' /etc/vsftpd.conf
+    print_message "FTP vulnerable configurado correctamente..."
 
 # CREAR CARPETAS FTP
-print_message "Creando carpetas públicas en el servidor FTP..."
-mkdir -p /var/ftp/pub
-touch /var/ftp/pub/datos_empresita.txt
-touch /var/ftp/pub/empleados_empresita.txt
-systemctl restart vsftpd
+    print_message "Creando carpetas públicas en el servidor FTP..."
+    mkdir -p /var/ftp/pub
+    touch /var/ftp/pub/datos_empresita.txt
+    touch /var/ftp/pub/empleados_empresita.txt
+    systemctl restart vsftpd
+    print_message "Carpetas FTP creadas correctamente..."
 
-# CREAR SERVICIO EN SYSTEMD PARA MONITORIZAR
-print_message "Creando servicio de monitorización de tráfico SSH y HTTP..."
-cat << EOT > /etc/systemd/system/tcpdump-ssh-http.service
-[Unit]
-Description=Captura tráfico SSH y HTTP
-After=network.target
+# CREAR SERVICIO EN SYSTEMD PARA MONITORIZAR SHH
+    print_message "Creando servicio de monitorización de tráfico SSH..."
+    # TODO LO ESCRITO DENTRO DE EOT SE ESCRIBE DENTRO DEL TXT DE CONFIGURACIÓN
+    cat << EOT > /etc/systemd/system/tcpdump-ssh.service
+        [Unit]
+        Description=Captura tráfico SSH
+        After=network.target
+    
+        [Service]
+        ExecStart=
+        Restart=on-failure
+        User=root
+        Group=root
+        ExecStartPre=/usr/sbin/tcpdump -D
+        StandardOutput=syslog
+        StandardError=syslog
+        SyslogIdentifier=tcpdump-ssh
+    
+        [Install]
+        WantedBy=multi-user.target
+    EOT
+    print_message "Servicio en systemd para SSH creado..."
 
-[Service]
-ExecStart=/usr/sbin/tcpdump -i eth0 -w /var/log/ssh_traffic.pcap port 22 or port 80
-Restart=on-failure
-User=root
-Group=root
-ExecStartPre=/usr/sbin/tcpdump -D
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=tcpdump-ssh-http
+# CREAR SERVICIO EN SYSTEMD PARA MONITORIZAR EL SERVICIO WEB
+    print_message "Creando servicio de monitorización de tráfico web (HTTP)..."
+    # TODO LO ESCRITO DENTRO DE EOT SE ESCRIBE DENTRO DEL TXT DE CONFIGURACIÓN
+    cat << EOT > /etc/systemd/system/tcpdump-http.service
+    [Unit]
+    Description=Captura tráfico HTTP
+    After=network.target
 
-[Install]
-WantedBy=multi-user.target
-EOT
+    [Service]
+    ExecStart=
+    Restart=on-failure
+    User=root
+    Group=root
+    ExecStartPre=/usr/sbin/tcpdump -D
+    StandardOutput=syslog
+    StandardError=syslog
+    SyslogIdentifier=tcpdump-http
 
-# REINICIAR SYSTEMD Y ACTIVANDO EL SERVICIO RECIEN CREADO
-print_message "Activando el servicio de monitorización..."
-systemctl daemon-reload
-systemctl enable tcpdump-ssh-http.service
-systemctl start tcpdump-ssh-http.service
+    [Install]
+    WantedBy=multi-user.target
+    EOT
+    print_message "Servicio en systemd para HTTP creado..."
+
+# CREAR SERVICIO EN SYSTEMD PARA MONITORIZAR FTP
+    print_message "Creando servicio de monitorización de tráfico FTP..."
+    # TODO LO ESCRITO DENTRO DE EOT SE ESCRIBE DENTRO DEL TXT DE CONFIGURACIÓN
+    cat << EOT > /etc/systemd/system/tcpdump-ftp.service
+    [Unit]
+    Description=Captura tráfico FTP
+    After=network.target
+    
+    [Service]
+    ExecStart=
+    Restart=on-failure
+    User=root
+    Group=root
+    ExecStartPre=/usr/sbin/tcpdump -D
+    StandardOutput=syslog
+    StandardError=syslog
+    SyslogIdentifier=tcpdump-ftp
+    
+    [Install]
+    WantedBy=multi-user.target
+    EOT
+    print_message "Servicio en systemd para ssh creado..."
+
+# CREAR SERVICIO EN SYSTEMD PARA MONITORIZAR MARIADB
+    print_message "Creando servicio de monitorización de tráfico MARIADB..."
+    # TODO LO ESCRITO DENTRO DE EOT SE ESCRIBE DENTRO DEL TXT DE CONFIGURACIÓN
+    cat << EOT > /etc/systemd/system/tcpdump-mariadb.service
+    [Unit]
+    Description=Captura tráfico MARIADB
+    After=network.target
+    
+    [Service]
+    ExecStart=
+    Restart=on-failure
+    User=root
+    Group=root
+    ExecStartPre=/usr/sbin/tcpdump -D
+    StandardOutput=syslog
+    StandardError=syslog
+    SyslogIdentifier=tcpdump-mariadb
+    
+    [Install]
+    WantedBy=multi-user.target
+    EOT
+    print_message "Servicio en systemd para MARIADB creado..."
+
+# REINICIAR SYSTEMD Y ACTIVAR LOS SERVICIOS RECIÉN CREADOS
+    print_message "Activando los servicios de monitorización..."
+    systemctl daemon-reload
+    systemctl enable tcpdump-ssh-http.service
+    systemctl start tcpdump-ssh-http.service
+    print_message "..."
 
 # CONFIGURACIÓN BÁSICA DEL FW
 print_message "Configurando el firewall..."
 ufw allow 22
 ufw allow 80
 ufw --force enable
+print_message "..."
 
 EOF
 
