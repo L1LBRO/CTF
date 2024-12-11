@@ -40,20 +40,20 @@ function print_message() {
   pct enter 112 << EOF
 
 # ACTUALIZAR EL SISTEMA
-print_message "Actualizando el sistema dentro del contenedor..."
-apt update && apt upgrade -y
+    print_message "Actualizando el sistema dentro del contenedor..."
+    apt update && apt upgrade -y
 
-# Instalar los programas necesarios
-print_message "Instalando programas necesarios para el honeypot..."
-apt install openssh-server -y && apt install nginx -y && apt install curl -y && apt install tcpdump -y && apt install rsyslog -y && apt install ufw -y && apt install vsftpd -y && apt install mariadb-server -y
+# INSTALAR LOS PROGRAMAS NECESARIOS
+    print_message "Instalando programas necesarios para el correcto funcionamiento del honeypot..."
+    apt install openssh-server -y && apt install nginx -y && apt install curl -y && apt install tcpdump -y && apt install rsyslog -y && apt install ufw -y && apt install vsftpd -y && apt install mariadb-server -y
 
-# Modificar configuración SSH para hacerla vulnerable
+# MODIFICACIÓN DEL FICHERO SSH PARA HACERLO PARECER VULNERABLE
 print_message "Modificando configuraciones de SSH para simular vulnerabilidades..."
 sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
 
-# Reiniciar servicio SSH
+# REINICIO DEL SERVICIO SSH
 print_message "Reiniciando el servicio SSH..."
 /etc/init.d/ssh restart
 
