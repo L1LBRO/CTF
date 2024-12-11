@@ -106,7 +106,7 @@ function print_message() {
         After=network.target
     
         [Service]
-        ExecStart=
+        ExecStart=/usr/sbin/tcpdump -i eth0 -w /var/log/ssh_traffic.pcap port 22
         Restart=on-failure
         User=root
         Group=root
@@ -129,7 +129,7 @@ function print_message() {
     After=network.target
 
     [Service]
-    ExecStart=
+    ExecStart=/usr/sbin/tcpdump -i eth0 -w /var/log/http_traffic.pcap port 80
     Restart=on-failure
     User=root
     Group=root
@@ -152,7 +152,7 @@ function print_message() {
     After=network.target
     
     [Service]
-    ExecStart=
+    ExecStart=/usr/sbin/tcpdump -i eth0 -w /var/log/ftp_traffic.pcap port 21
     Restart=on-failure
     User=root
     Group=root
@@ -175,7 +175,7 @@ function print_message() {
     After=network.target
     
     [Service]
-    ExecStart=
+    ExecStart=/usr/sbin/tcpdump -i eth0 -w /var/log/mariadb_traffic.pcap port 3306
     Restart=on-failure
     User=root
     Group=root
@@ -191,17 +191,36 @@ function print_message() {
 
 # REINICIAR SYSTEMD Y ACTIVAR LOS SERVICIOS RECIÉN CREADOS
     print_message "Activando los servicios de monitorización..."
+    
+    print_message "Reiniciando SYSTEMD..."
     systemctl daemon-reload
-    systemctl enable tcpdump-ssh-http.service
-    systemctl start tcpdump-ssh-http.service
-    print_message "..."
+    
+    print_message "Inicializando el servicio de monitoreo de SSH..."
+    systemctl enable tcpdump-ssh.service
+    systemctl start tcpdump-ssh.service
+
+    print_message "Inicializando el servicio de monitoreo de HTTP..."
+    systemctl enable tcpdump-http.service
+    systemctl start tcpdump-http.service
+
+    print_message "Inicializando el servicio de monitoreo de FTP..."
+    systemctl enable tcpdump-ftp.service
+    systemctl start tcpdump-ftp.service
+
+    print_message "Inicializando el servicio de monitoreo de mariadb..."
+    systemctl enable tcpdump-mariadb.service
+    systemctl start tcpdump-mariadb.service
+    
+    print_message "Servicios Inicializados correctamente..."
 
 # CONFIGURACIÓN BÁSICA DEL FW
 print_message "Configurando el firewall..."
 ufw allow 22
 ufw allow 80
+ufw allow 21
+ufw allo 3306
 ufw --force enable
-print_message "..."
+print_message "FW Básico configurado..."
 
 EOF
 
