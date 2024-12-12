@@ -58,12 +58,7 @@ fi
   --cores 2 \
   --net0 name=eth0,bridge=vmbr0,ip=dhcp \
   --password P@ssw0rd!
-if [ $? -eq 0 ]; then
-    print_ejecución_correcta "Se Ha Creado El Contenedor Debian Con ID $ID_CONTENEDOR..."
- else
-     print_error "La Creación Ha Fallado Se Va a Parar el Script..."
-     exit
-fi
+
    
 
 # INICIANDO EL CONTENEDOR
