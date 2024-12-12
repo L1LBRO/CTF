@@ -88,7 +88,7 @@ fi
 
 pct exec $ID_CONTENEDOR -- apt upgrade -y
 if [ $? -eq 0 ]; then
-    print_sucess "Sistema actualizado correctamente"
+    print_sucess "Sistema actualizado correctamente..."
 else
     print_error "Error en la actualización del sistema..."
     exit 1
