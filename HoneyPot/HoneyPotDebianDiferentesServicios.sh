@@ -14,21 +14,8 @@ NC='\033[0m' # Sin color
 function print_info() {
     echo -e "${YELLOW}[INFO]${NC} $1"
 }
-
-function print_infoG() {
-    echo -e "${GREEN}[FINALIZADO]${NC} $1"
-}
-
-function print_infoR() {
-    echo -e "${RED}[FALLO]${NC} $1"
-}
-
-function print_infoB() {
-    echo -e "${YELLOW}[ACCIONES]${NC} $1"
-}
-
 # ACTUALIZAR LISTA DE CONTENEDORES
-  print_info() "Actualizando la lista de plantillas de contenedores..."
+  print_message "Actualizando la lista de plantillas de contenedores..."
   pveam update
 
 # DESCARGA DEL CONTENEDOR DE DEBIAN 12
