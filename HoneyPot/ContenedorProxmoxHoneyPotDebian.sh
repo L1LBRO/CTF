@@ -96,4 +96,3 @@ apt upgrade -y
 apt install curl -y
 
 curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/CrearConfigurarDebianHoneyPot.sh | bash
-
