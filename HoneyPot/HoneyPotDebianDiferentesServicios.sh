@@ -1,11 +1,8 @@
+#!/bin/bash
+
 #Para ejecucción remota
     # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/HoneyPotDebianDiferentesServicios.sh | bash
 
-
-
-
-
-#!/bin/bash
 
 # Mensajes
 RED='\033[0;31m'
@@ -31,7 +28,7 @@ function print_infoB() {
 }
 
 # ACTUALIZAR LISTA DE CONTENEDORES
-  print_message "Actualizando la lista de plantillas de contenedores..."
+  print_info() "Actualizando la lista de plantillas de contenedores..."
   pveam update
 
 # DESCARGA DEL CONTENEDOR DE DEBIAN 12
