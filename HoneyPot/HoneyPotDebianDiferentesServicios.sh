@@ -90,6 +90,7 @@ if [ $? -eq 0 ]; then
     print_sucess "Sistema actualizado correctamente..."
 else
     print_error "Fallo al actualizar el sistema..."
+    exit 1
 fi
 
 
