@@ -38,7 +38,7 @@ else
     exit
 fi
 
-ID_CONTENEDOR = 112
+ID_CONTENEDOR=112
 
 # DESCARGA DEL CONTENEDOR DE DEBIAN 12
 print_info "Descargando la Plantilla de Debian 12..."
