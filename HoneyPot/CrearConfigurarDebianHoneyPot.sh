@@ -19,24 +19,8 @@ function print_success() {
 }
 
 print_info "Iniciando configuración de Debian como Honeypot..."
+sleep 2
 
-apt update 
-if [ $? -eq 0 ]; then
-    print_sucess "Repositorios actualizados correctamente"
-else
-    print_error "Error en la actualización de repositorios..."
-    exit 1
-fi
-sleep 5
-
-apt upgrade -y
-if [ $? -eq 0 ]; then
-    print_sucess "Sistema actualizado correctamente..."
-else
-    print_error "Error en la actualización del sistema..."
-    exit 1
-fi
-sleep 5
 
 # Instalación de las dependencias necesarias
 print_info "Instalando las dependencias necesarias para el HoneyPot..."
@@ -112,8 +96,8 @@ else
 fi
 sleep 5
 
-pct exec $vID_CONTENEDOR -- systemctl start ufw
-pct exec $vID_CONTENEDOR -- systemctl enable ufw
+systemctl start ufw
+systemctl enable ufw
 if [ $? -eq 0 ]; then
     print_sucess "UFW activado..."
 else
@@ -131,8 +115,8 @@ else
 fi
 sleep 5
 
-pct exec $vID_CONTENEDOR -- systemctl start vsftpd
-pct exec $vID_CONTENEDOR -- systemctl enable vsftpd
+systemctl start vsftpd
+systemctl enable vsftpd
 if [ $? -eq 0 ]; then
     print_sucess "Vsftpd activado..."
 else
@@ -150,8 +134,8 @@ else
 fi
 sleep 5
 
-pct exec $vID_CONTENEDOR -- systemctl start mariadb
-pct exec $vID_CONTENEDOR -- systemctl enable mariadb
+systemctl start mariadb
+systemctl enable mariadb
 if [ $? -eq 0 ]; then
     print_sucess "Mariadb activar..."
 else
@@ -178,22 +162,12 @@ else
 fi
 sleep 5
 
-apt install curl -y
-if [ $? -eq 0 ]; then
-    print_sucess "Curl instalado..."
-else
-    print_error "Error al instalar Curl..."
-    exit 1
-fi
-sleep 5
-
-
 # Modificación del fichero SSH para hacerlo parecer vulnerable
 print_info "Modificando configuraciones del archivo sshd_config para simular vulnerabilidades ..."
 
-pct exec $vID_CONTENEDOR -- sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-pct exec $vID_CONTENEDOR -- sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-pct exec $vID_CONTENEDOR -- sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
+sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
 
 if [ $? -eq 0 ]; then
     print_sucess "Configuración vulnerable de SSH creada..."
