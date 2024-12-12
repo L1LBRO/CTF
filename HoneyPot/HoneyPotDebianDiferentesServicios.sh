@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# EJECUCIÓN REMOTA
+    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/HoneyPotDebianDiferentesServicios.sh | bash
+
+
 # Mensajes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -71,3 +75,28 @@ else
     print_error "Error al iniciar el contenedor. Abortando..."
     exit 1
 fi
+
+# Actualizar el contenedor
+print_info "Actualización del contenedor en curso..."
+pct exec $ID_CONTENEDOR -- apt update 
+if [ $? -eq 0 ]; then
+    print_sucess "Repositorios actualizados correctamente"
+else
+    print_error "Error en la actualización de repositorios..."
+    exit 1
+fi
+pct exec $ID_CONTENEDOT -- apt upgrade -y
+if [ $? -eq 0 ]; then
+    print_sucess "Sistema actualizado correctamente..."
+else
+    print_error "Fallo al actualizar el sistema..."
+fi
+
+
+
+
+
+
+
+
+
