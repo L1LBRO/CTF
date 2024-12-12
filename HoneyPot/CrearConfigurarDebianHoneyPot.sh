@@ -18,6 +18,8 @@ function print_success() {
     echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
 
+print_info "Iniciando configuración de Debian como Honeypot..."
+
 apt update 
 if [ $? -eq 0 ]; then
     print_sucess "Repositorios actualizados correctamente"
