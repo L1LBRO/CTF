@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#Para ejecucción remota
-# curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/HoneyPotDebianDiferentesServicios.sh | bash
-
-
 # Mensajes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -16,84 +12,84 @@ function print_info() {
 }
 
 function print_error() {
-    echo -e "${RED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
+    echo -e "${RED}[ERROR]${NC} $1"
 }
 
-function print_ejecución_correcta() {
-    echo -e "${GREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
+function print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
 }
 
-function print_atención() {
+function print_attention() {
     echo -e "${BLUE}[ATENCIÓN]${NC} $1"
 }
 
-
-# ACTUALIZAR LISTA DE CONTENEDORES
-    print_info "Actualizando La Lista De Plantillas De Contenedores..."
+# Actualizar lista de plantillas
+print_info "Actualizando la lista de plantillas de contenedores..."
 pveam update
 if [ $? -eq 0 ]; then
-    print_ejecución_correcta "La Actualización Se Ha Completado Satisfactoriamente..."
+    print_success "Lista de plantillas actualizada correctamente."
 else
-    print_error "La Actualización Ha Fallado Se Va a Parar El Script..."
-    exit
+    print_error "Error al actualizar la lista de plantillas. Abortando..."
+    exit 1
 fi
 
+# Variables
 ID_CONTENEDOR=112
+TEMPLATE="debian-12-standard_12.7-1_amd64.tar.zst"
+STORAGE="local-lvm"
+PASSWORD="P@ssw0rd!"
 
-# DESCARGA DEL CONTENEDOR DE DEBIAN 12
-print_info "Descargando la Plantilla de Debian 12..."
-pveam download local debian-12-standard_12.7-1_amd64.tar.zst
+# Descargar la plantilla Debian 12
+print_info "Descargando la plantilla de Debian 12..."
+pveam download local $TEMPLATE
 if [ $? -eq 0 ]; then
-    print_ejecución_correcta "La Descarga Se Ha Completado Satisfactoriamente..."
+    print_success "Plantilla descargada correctamente."
 else
-    print_error "La Descarga Ha Fallado Se Va a Parar El Script..."
-    exit
+    print_error "Error al descargar la plantilla. Abortando..."
+    exit 1
 fi
 
-# CREACIÓN DEL CONTENEDOR
-print_info "Creando el Contenedor Debian..."
-pct create $ID_CONTENEDOR local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst \
+# Crear el contenedor
+print_info "Creando el contenedor Debian..."
+pct create $ID_CONTENEDOR local:vztmpl/$TEMPLATE \
     --hostname servidores-importantes \
-    --storage local-lvm \
+    --storage $STORAGE \
     --rootfs 8 \
     --memory 2048 \
     --cores 2 \
     --net0 name=eth0,bridge=vmbr0,ip=dhcp \
-    --password P@ssw0rd!
+    --password $PASSWORD
 if [ $? -eq 0 ]; then
-    print_ejecución_correcta "Contenedor Creeado Satisfactoriamente..."
+    print_success "Contenedor creado correctamente."
 else
-    print_error "La Creación Ha Fallado Se Va a Parar El Script..."
-    exit
+    print_error "Error al crear el contenedor. Abortando..."
+    exit 1
 fi
 
-# INICIANDO EL CONTENEDOR
+# Iniciar el contenedor
 print_info "Iniciando el contenedor Debian..."
-pct start $ID_CONTENEDOR 
-
+pct start $ID_CONTENEDOR
 if [ $? -eq 0 ]; then
-    print_ejecución_correcta "Contenedor Inicidado Satisfactoriamente..."
+    print_success "Contenedor iniciado correctamente."
 else
-    print_error "No Se Ha Podido Iniciar El Contenedor Ha Fallado Se Va a Parar El Script..."
-    exit
+    print_error "Error al iniciar el contenedor. Abortando..."
+    exit 1
 fi
 
-# ACTUALIZACIÓN DEL DEBIAN
-print_info "Iniciando Los Comandos De Configuración..."
+# Actualización del sistema dentro del contenedor
+print_info "Actualizando el sistema dentro del contenedor..."
 pct exec $ID_CONTENEDOR -- apt update
-
 if [ $? -eq 0 ]; then
-    print_ejecución_correcta "Descarga De Repositorios En El Contenedor $ID_CONTENEDOR Correcta..."
+    print_success "Repositorios actualizados correctamente."
 else
-    print_error "La Descarga De Repositorios Ha Fallado Se Va a Parar el Script..."
-    exit
+    print_error "Error al actualizar repositorios. Abortando..."
+    exit 1
 fi
 
 pct exec $ID_CONTENEDOR -- apt upgrade -y
-
 if [ $? -eq 0 ]; then
-    print_ejecución_correcta "Actualización Del Sistema Correcta..."
+    print_success "Sistema actualizado correctamente."
 else
-    print_error "La Actualización Ha Fallado Se Va a Parar el Script..."
-    exit
+    print_error "Error al actualizar el sistema. Abortando..."
+    exit 1
 fi
