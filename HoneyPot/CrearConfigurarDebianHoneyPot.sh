@@ -18,19 +18,23 @@ function print_success() {
     echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
 
-print_info "Iniciando configuración de Debian como Honeypot..."
+print_info 
+echo "Iniciando configuración de Debian como Honeypot..."
 sleep 2
 
 
 # Instalación de las dependencias necesarias
-print_info "Instalando las dependencias necesarias para el HoneyPot..."
+print_info 
+echo "Instalando las dependencias necesarias para el HoneyPot..."
 sleep 5
 # OPENSSH
 apt install openssh-server -y
 if [ $? -eq 0 ]; then
-    print_success "OpenSSH instalado..."
+    print_success 
+    echo "OpenSSH instalado..."
 else
-    print_error "Error al instalar OpenSSH..."
+    print_error 
+    echo "Error al instalar OpenSSH..."
     exit 1
 fi
 sleep 5
@@ -38,9 +42,11 @@ sleep 5
 systemctl start ssh
 systemctl enable ssh
 if [ $? -eq 0 ]; then
-    print_success "OpenSSH activado..."
+    print_success 
+    echo "OpenSSH activado..."
 else
-    print_error "Error al activar OpenSSH..."
+    print_error 
+    echo "Error al activar OpenSSH..."
     exit 1
 fi
 sleep 5
@@ -48,9 +54,11 @@ sleep 5
 
 apt install nginx -y
 if [ $? -eq 0 ]; then
-    print_success "Nginx instalado..."
+    print_success 
+    echo "Nginx instalado..."
 else
-    print_error "Error al activar Nginx..."
+    print_error 
+    echo "Error al activar Nginx..."
     exit 1
 fi
 
@@ -59,9 +67,11 @@ sleep 5
 systemctl start nginx
 systemctl enable nginx
 if [ $? -eq 0 ]; then
-    print_success "Nginx activado..."
+    print_success 
+    echo "Nginx activado..."
 else
-    print_error "Error al activar Nginx..."
+    print_error 
+    echo "Error al activar Nginx..."
     exit 1
 fi
 sleep 5
@@ -69,9 +79,11 @@ sleep 5
 
 apt install rsyslog -y
 if [ $? -eq 0 ]; then
-    print_success "Rsyslog instalado..."
+    print_success 
+    echo "Rsyslog instalado..."
 else
-    print_error "Error al instalar Rsyslog..."
+    print_error 
+    echo "Error al instalar Rsyslog..."
     exit 1
 fi
 sleep 5
@@ -79,9 +91,11 @@ sleep 5
 systemctl start rsyslog
 systemctl enable rsyslog
 if [ $? -eq 0 ]; then
-    print_success "Rsyslog activado..."
+    print_success 
+    echo "Rsyslog activado..."
 else
-    print_error "Error al activar Rsyslog..."
+    print_error 
+    echo "Error al activar Rsyslog..."
     exit 1
 fi
 sleep 5
@@ -89,9 +103,11 @@ sleep 5
 
 apt install ufw -y
 if [ $? -eq 0 ]; then
-    print_success "UFW instalado..."
+    print_success 
+    echo "UFW instalado..."
 else
-    print_error "Error al instalar UFW..."
+    print_error 
+    echo "Error al instalar UFW..."
     exit 1
 fi
 sleep 5
@@ -99,18 +115,22 @@ sleep 5
 systemctl start ufw
 systemctl enable ufw
 if [ $? -eq 0 ]; then
-    print_success "UFW activado..."
+    print_success 
+    echo "UFW activado..."
 else
-    print_error "Error al activar UFW..."
+    print_error 
+    echo "Error al activar UFW..."
     exit 1
 fi
 sleep 5
 
 apt install vsftpd -y
 if [ $? -eq 0 ]; then
-    print_success "Vsftpd instalado..."
+    print_success 
+    echo "Vsftpd instalado..."
 else
-    print_error "Error al instalar Vsftpd..."
+    print_error 
+    echo "Error al instalar Vsftpd..."
     exit 1
 fi
 sleep 5
@@ -118,18 +138,22 @@ sleep 5
 systemctl start vsftpd
 systemctl enable vsftpd
 if [ $? -eq 0 ]; then
-    print_success "Vsftpd activado..."
+    print_success 
+    echo "Vsftpd activado..."
 else
-    print_error "Error al activar Vsftpd..."
+    print_error 
+    echo "Error al activar Vsftpd..."
     exit 1
 fi
 sleep 5
 
 apt install mariadb-server -y
 if [ $? -eq 0 ]; then
-    print_success "Mariadb instalado..."
+    print_success 
+    echo "Mariadb instalado..."
 else
-    print_error "Error al instalar Mariadb..."
+    print_error 
+    echo "Error al instalar Mariadb..."
     exit 1
 fi
 sleep 5
@@ -137,41 +161,50 @@ sleep 5
 systemctl start mariadb
 systemctl enable mariadb
 if [ $? -eq 0 ]; then
-    print_success "Mariadb activar..."
+    print_success 
+    echo "Mariadb activado..."
 else
-    print_error "Error al activar Mariadb..."
+    print_error 
+    echo "Error al activar Mariadb..."
     exit 1
 fi
 sleep 5
 
 apt install git -y
 if [ $? -eq 0 ]; then
-    print_success "Git instalado..."
+    print_success 
+    echo "Git instalado..."
 else
-    print_error "Error al instalar Git..."
+    print_error 
+    echo "Error al instalar Git..."
     exit 1
 fi
 sleep 5
 
 apt install tcpdump -y
 if [ $? -eq 0 ]; then
-    print_success "Tcpdump instalado..."
+    print_success 
+    echo "Tcpdump instalado..."
 else
-    print_error "Error al instalar Tcpdump..."
+    print_error 
+    echo "Error al instalar Tcpdump..."
     exit 1
 fi
 sleep 5
 
 # Modificación del fichero SSH para hacerlo parecer vulnerable
-print_info "Modificando configuraciones del archivo sshd_config para simular vulnerabilidades ..."
+print_info 
+echo "Modificando configuraciones del archivo sshd_config para simular vulnerabilidades ..."
 
 sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
 
 if [ $? -eq 0 ]; then
-    print_success "Configuración vulnerable de SSH creada..."
+    print_success 
+    echo "Configuración vulnerable de SSH creada..."
 else
-    print_error "Error al configurar SSH..."
+    print_error 
+    echo "Error al configurar SSH..."
     exit 1
 fi
