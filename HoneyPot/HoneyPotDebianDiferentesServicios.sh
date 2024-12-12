@@ -85,7 +85,8 @@ else
     print_error "Error en la actualización de repositorios..."
     exit 1
 fi
-pct exec $ID_CONTENEDOT -- apt upgrade -y
+
+pct exec $ID_CONTENEDOR -- apt upgrade -y
 if [ $? -eq 0 ]; then
     print_sucess "Sistema actualizado correctamente..."
 else
