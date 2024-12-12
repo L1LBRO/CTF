@@ -5,22 +5,22 @@
 
 
 # Mensajes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[1;34m'
-NC='\033[0m' # Sin color
+cRED='\033[0;31m'
+cGREEN='\033[0;32m'
+cYELLOW='\033[1;33m'
+cBLUE='\033[1;34m'
+cNC='\033[0m' # Sin color
 
 function print_info() {
-    echo -e "${YELLOW}[INFO]${NC} $1"
+    echo -e "${cYELLOW}[INFO]${NC} $1"
 }
 
 function print_error() {
-    echo -e "${RED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
+    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
 }
 
 function print_success() {
-    echo -e "${GREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
+    echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
 
 # Actualizar lista de plantillas
@@ -34,14 +34,15 @@ else
 fi
 
 # Variables
-ID_CONTENEDOR=112
-TEMPLATE="debian-12-standard_12.7-1_amd64.tar.zst"
-STORAGE="local-lvm"
-PASSWORD="P@ssw0rd!"
+vID_CONTENEDOR=112
+vTEMPLATE="debian-12-standard_12.7-1_amd64.tar.zst"
+vSTORAGE="local-lvm"
+vPASSWORD="P@ssw0rd!"
+vEjecutarComandoContenedor='pct exec $vID_CONTENEDOR'
 
 # Descargar la plantilla Debian 12
 print_info "Descargando la plantilla de Debian 12..."
-pveam download local $TEMPLATE
+pveam download local $vTEMPLATE
 if [ $? -eq 0 ]; then
     print_success "Plantilla descargada correctamente."
 else
@@ -51,14 +52,14 @@ fi
 
 # Crear el contenedor
 print_info "Creando el contenedor Debian..."
-pct create $ID_CONTENEDOR local:vztmpl/$TEMPLATE \
+pct create $vID_CONTENEDOR local:vztmpl/$vTEMPLATE \
     --hostname servidores-importantes \
-    --storage $STORAGE \
+    --storage $vSTORAGE \
     --rootfs 8 \
     --memory 2048 \
     --cores 2 \
     --net0 name=eth0,bridge=vmbr0,ip=dhcp \
-    --password $PASSWORD
+    --password $vPASSWORD
 if [ $? -eq 0 ]; then
     print_success "Contenedor creado correctamente."
 else
@@ -68,7 +69,7 @@ fi
 
 # Iniciar el contenedor
 print_info "Iniciando el contenedor Debian..."
-pct start $ID_CONTENEDOR
+pct start $vID_CONTENEDOR
 if [ $? -eq 0 ]; then
     print_success "Contenedor iniciado correctamente."
 else
@@ -78,7 +79,7 @@ fi
 
 # Actualizar el contenedor
 print_info "Actualización del contenedor en curso..."
-pct exec $ID_CONTENEDOR -- apt update 
+$vEjecutarComandoContenedor -- apt update 
 if [ $? -eq 0 ]; then
     print_sucess "Repositorios actualizados correctamente"
 else
@@ -86,7 +87,7 @@ else
     exit 1
 fi
 
-pct exec $ID_CONTENEDOR -- apt upgrade -y
+pct exec $vID_CONTENEDOR -- apt upgrade -y
 if [ $? -eq 0 ]; then
     print_sucess "Sistema actualizado correctamente..."
 else
@@ -94,6 +95,7 @@ else
     exit 1
 fi
 
+# Instalación de las dependencias necesarias
 
 
 
