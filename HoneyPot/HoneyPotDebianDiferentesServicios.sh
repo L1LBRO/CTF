@@ -41,7 +41,11 @@ vPASSWORD="P@ssw0rd!"
 
 
 # Descargar la plantilla Debian 12
+echo ""
+echo ""
 print_info "Descargando la plantilla de Debian 12..."
+echo ""
+echo ""
 pveam download local $vTEMPLATE
 if [ $? -eq 0 ]; then
     print_success "Plantilla descargada correctamente."
@@ -99,64 +103,69 @@ fi
 print_info "Instalando las dependencias necesarias para el HoneyPot..."
 # OPENSSH
 pct exec $vID_CONTENEDOR -- apt install openssh-server -y
-pct exec $vID_CONTENEDOR -- systemctl start ssh
-pct exec $vID_CONTENEDOR -- systemctl enable ssh
 if [ $? -eq 0 ]; then
     print_sucess "OpenSSH instalado e iniciado correctamente..."
 else
     print_error "Error al instalar OpenSSH..."
     exit 1
 fi
+pct exec $vID_CONTENEDOR -- systemctl start ssh
+pct exec $vID_CONTENEDOR -- systemctl enable ssh
+
 
 pct exec $vID_CONTENEDOR -- apt install nginx -y
-pct exec $vID_CONTENEDOR -- systemctl start nginx
-pct exec $vID_CONTENEDOR -- systemctl enable nginx
 if [ $? -eq 0 ]; then
     print_sucess "Nginx instalado..."
 else
     print_error "Error al instalar Nginx..."
     exit 1
 fi
+pct exec $vID_CONTENEDOR -- systemctl start nginx
+pct exec $vID_CONTENEDOR -- systemctl enable nginx
+
 
 pct exec $vID_CONTENEDOR -- apt install rsyslog -y
-pct exec $vID_CONTENEDOR -- systemctl start rsyslog
-pct exec $vID_CONTENEDOR -- systemctl enable rsyslog
 if [ $? -eq 0 ]; then
     print_sucess "Rsyslog instalado e iniciado correctamente..."
 else
     print_error "Error al instalar Rsyslog..."
     exit 1
 fi
+pct exec $vID_CONTENEDOR -- systemctl start rsyslog
+pct exec $vID_CONTENEDOR -- systemctl enable rsyslog
+
 
 pct exec $vID_CONTENEDOR -- apt install ufw -y
-pct exec $vID_CONTENEDOR -- systemctl start ufw
-pct exec $vID_CONTENEDOR -- systemctl enable ufw
 if [ $? -eq 0 ]; then
     print_sucess "UFW instalado e iniciado correctamente..."
 else
     print_error "Error al instalar UFW..."
     exit 1
 fi
+pct exec $vID_CONTENEDOR -- systemctl start ufw
+pct exec $vID_CONTENEDOR -- systemctl enable ufw
+
 
 pct exec $vID_CONTENEDOR -- apt install vsftpd -y
-pct exec $vID_CONTENEDOR -- systemctl start vsftpd
-pct exec $vID_CONTENEDOR -- systemctl enable vsftpd
 if [ $? -eq 0 ]; then
     print_sucess "Vsftpd instalado e iniciado correctamente..."
 else
     print_error "Error al instalar Vsftpd..."
     exit 1
 fi
+pct exec $vID_CONTENEDOR -- systemctl start vsftpd
+pct exec $vID_CONTENEDOR -- systemctl enable vsftpd
 
-pct exec $vID_CONTENEDOR -- apt install mariadb -y
-pct exec $vID_CONTENEDOR -- systemctl start mariadb
-pct exec $vID_CONTENEDOR -- systemctl enable mariadb
+
+pct exec $vID_CONTENEDOR -- apt install mariadb-server -y
 if [ $? -eq 0 ]; then
     print_sucess "Mariadb instalado e iniciado correctamente..."
 else
     print_error "Error al instalar Mariadb..."
     exit 1
 fi
+pct exec $vID_CONTENEDOR -- systemctl start mariadb
+pct exec $vID_CONTENEDOR -- systemctl enable mariadb
 
 pct exec $vID_CONTENEDOR -- apt install git -y
 if [ $? -eq 0 ]; then
