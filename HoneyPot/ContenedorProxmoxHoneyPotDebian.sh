@@ -88,4 +88,5 @@ sleep 5
 # Actualizar el contenedor
 print_info "Entrando al contenedor Debian para su configuración..."
 pct enter $vID_CONTENEDOR
+curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/CrearConfigurarDebianHoneyPot.sh | bash
 sleep 5
