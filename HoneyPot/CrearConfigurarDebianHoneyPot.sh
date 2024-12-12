@@ -28,7 +28,7 @@ sleep 5
 # OPENSSH
 apt install openssh-server -y
 if [ $? -eq 0 ]; then
-    print_sucess "OpenSSH instalado..."
+    print_success "OpenSSH instalado..."
 else
     print_error "Error al instalar OpenSSH..."
     exit 1
@@ -38,7 +38,7 @@ sleep 5
 systemctl start ssh
 systemctl enable ssh
 if [ $? -eq 0 ]; then
-    print_sucess "OpenSSH activado..."
+    print_success "OpenSSH activado..."
 else
     print_error "Error al activar OpenSSH..."
     exit 1
@@ -48,7 +48,7 @@ sleep 5
 
 apt install nginx -y
 if [ $? -eq 0 ]; then
-    print_sucess "Nginx instalado..."
+    print_success "Nginx instalado..."
 else
     print_error "Error al activar Nginx..."
     exit 1
@@ -59,7 +59,7 @@ sleep 5
 systemctl start nginx
 systemctl enable nginx
 if [ $? -eq 0 ]; then
-    print_sucess "Nginx activado..."
+    print_success "Nginx activado..."
 else
     print_error "Error al activar Nginx..."
     exit 1
@@ -69,7 +69,7 @@ sleep 5
 
 apt install rsyslog -y
 if [ $? -eq 0 ]; then
-    print_sucess "Rsyslog instalado..."
+    print_success "Rsyslog instalado..."
 else
     print_error "Error al instalar Rsyslog..."
     exit 1
@@ -79,7 +79,7 @@ sleep 5
 systemctl start rsyslog
 systemctl enable rsyslog
 if [ $? -eq 0 ]; then
-    print_sucess "Rsyslog activado..."
+    print_success "Rsyslog activado..."
 else
     print_error "Error al activar Rsyslog..."
     exit 1
@@ -89,7 +89,7 @@ sleep 5
 
 apt install ufw -y
 if [ $? -eq 0 ]; then
-    print_sucess "UFW instalado..."
+    print_success "UFW instalado..."
 else
     print_error "Error al instalar UFW..."
     exit 1
@@ -99,7 +99,7 @@ sleep 5
 systemctl start ufw
 systemctl enable ufw
 if [ $? -eq 0 ]; then
-    print_sucess "UFW activado..."
+    print_success "UFW activado..."
 else
     print_error "Error al activar UFW..."
     exit 1
@@ -108,7 +108,7 @@ sleep 5
 
 apt install vsftpd -y
 if [ $? -eq 0 ]; then
-    print_sucess "Vsftpd instalado..."
+    print_success "Vsftpd instalado..."
 else
     print_error "Error al instalar Vsftpd..."
     exit 1
@@ -118,7 +118,7 @@ sleep 5
 systemctl start vsftpd
 systemctl enable vsftpd
 if [ $? -eq 0 ]; then
-    print_sucess "Vsftpd activado..."
+    print_success "Vsftpd activado..."
 else
     print_error "Error al activar Vsftpd..."
     exit 1
@@ -127,7 +127,7 @@ sleep 5
 
 apt install mariadb-server -y
 if [ $? -eq 0 ]; then
-    print_sucess "Mariadb instalado..."
+    print_success "Mariadb instalado..."
 else
     print_error "Error al instalar Mariadb..."
     exit 1
@@ -137,7 +137,7 @@ sleep 5
 systemctl start mariadb
 systemctl enable mariadb
 if [ $? -eq 0 ]; then
-    print_sucess "Mariadb activar..."
+    print_success "Mariadb activar..."
 else
     print_error "Error al activar Mariadb..."
     exit 1
@@ -146,7 +146,7 @@ sleep 5
 
 apt install git -y
 if [ $? -eq 0 ]; then
-    print_sucess "Git instalado..."
+    print_success "Git instalado..."
 else
     print_error "Error al instalar Git..."
     exit 1
@@ -155,7 +155,7 @@ sleep 5
 
 apt install tcpdump -y
 if [ $? -eq 0 ]; then
-    print_sucess "Tcpdump instalado..."
+    print_success "Tcpdump instalado..."
 else
     print_error "Error al instalar Tcpdump..."
     exit 1
@@ -170,8 +170,8 @@ sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/
 sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
 
 if [ $? -eq 0 ]; then
-    print_sucess "Configuración vulnerable de SSH creada..."
+    print_success "Configuración vulnerable de SSH creada..."
 else
-    print_error "Erro al configurar SSH..."
+    print_error "Error al configurar SSH..."
     exit 1
 fi
