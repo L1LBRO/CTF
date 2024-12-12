@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# EJECUCIÓN REMOTA
+    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/HoneyPotDebianDiferentesServicios.sh | bash
+
+
 # Mensajes
 cRED='\033[0;31m'
 cGREEN='\033[0;32m'
@@ -8,16 +12,28 @@ cBLUE='\033[1;34m'
 cNC='\033[0m' # Sin color
 
 function print_info() {
-    echo -e "${cYELLOW}[INFO]${cNC} $1"
+    echo -e "${cYELLOW}[INFO]${NC} $1"
 }
 
 function print_error() {
-    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${cNC} $1"
+    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
 }
 
 function print_success() {
-    echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${cNC} $1"
+    echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
+
+# Actualizar lista de plantillas
+print_info "Actualizando la lista de plantillas de contenedores..."
+sleep 5
+pveam update
+if [ $? -eq 0 ]; then
+    print_success "Lista de plantillas actualizada correctamente..."
+else
+    print_error "Error al actualizar la lista de plantillas. Abortando..."
+    exit 1
+fi
+sleep 5
 
 # Variables
 vID_CONTENEDOR=112
@@ -25,75 +41,254 @@ vTEMPLATE="debian-12-standard_12.7-1_amd64.tar.zst"
 vSTORAGE="local-lvm"
 vPASSWORD="P@ssw0rd!"
 
-# Crear el contenedor y realizar la configuración
+
+# Descargar la plantilla Debian 12
+print_info "Descargando la plantilla de Debian 12..."
+sleep 5
+pveam download local $vTEMPLATE
+if [ $? -eq 0 ]; then
+    print_success "Plantilla descargada correctamente."
+else
+    print_error "Error al descargar la plantilla. Abortando..."
+    exit 1
+fi
+sleep 5
+
+# Crear el contenedor
+print_info "Creando el contenedor Debian..."
+sleep 5
+pct create $vID_CONTENEDOR local:vztmpl/$vTEMPLATE \
+    --hostname servidores-importantes \
+    --storage $vSTORAGE \
+    --rootfs 8 \
+    --memory 2048 \
+    --cores 2 \
+    --net0 name=eth0,bridge=vmbr0,ip=dhcp \
+    --password $vPASSWORD
+if [ $? -eq 0 ]; then
+    print_success "Contenedor creado correctamente."
+else
+    print_error "Error al crear el contenedor. Abortando..."
+    exit 1
+fi
+sleep 5
+
+# Iniciar el contenedor
+print_info "Iniciando el contenedor Debian..."
+sleep 5
+pct start $vID_CONTENEDOR
+if [ $? -eq 0 ]; then
+    print_success "Contenedor iniciado correctamente."
+else
+    print_error "Error al iniciar el contenedor. Abortando..."
+    exit 1
+fi
+sleep 5
+
+# Actualizar el contenedor
 print_info "Entrando al contenedor Debian para su configuración..."
 pct enter $vID_CONTENEDOR <<EOF
+sleep 5
 
-# Variables de color dentro del contenedor
-cRED='\033[0;31m'
-cGREEN='\033[0;32m'
-cYELLOW='\033[1;33m'
-cBLUE='\033[1;34m'
-cNC='\033[0m' # Sin color
+export cRED='\033[0;31m'
+export cGREEN='\033[0;32m'
+export cYELLOW='\033[1;33m'
+export cBLUE='\033[1;34m'
+export cNC='\033[0m' # Sin color
 
 function print_info() {
-    echo -e "${cYELLOW}[INFO]${cNC} $1"
+    echo -e "${cYELLOW}[INFO]${NC} $1"
 }
 
 function print_error() {
-    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${cNC} $1"
+    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
 }
 
 function print_success() {
-    echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${cNC} $1"
+    echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
 
-# Actualizar repositorios
-print_info "Actualizando los repositorios..."
-apt update
+apt update 
 if [ $? -eq 0 ]; then
-    print_success "Repositorios actualizados correctamente."
+    print_sucess "Repositorios actualizados correctamente"
 else
-    print_error "Error al actualizar los repositorios."
+    print_error "Error en la actualización de repositorios..."
     exit 1
 fi
+sleep 5
 
-# Actualizar el sistema
-print_info "Actualizando el sistema..."
 apt upgrade -y
 if [ $? -eq 0 ]; then
-    print_success "Sistema actualizado correctamente."
+    print_sucess "Sistema actualizado correctamente..."
 else
-    print_error "Error al actualizar el sistema."
+    print_error "Error en la actualización del sistema..."
     exit 1
 fi
+sleep 5
 
-# Instalar dependencias
-DEPENDENCIAS=(openssh-server nginx rsyslog ufw vsftpd mariadb-server git tcpdump curl)
-for DEP in "${DEPENDENCIAS[@]}"; do
-    print_info "Instalando $DEP..."
-    apt install -y $DEP
-    if [ $? -eq 0 ]; then
-        print_success "$DEP instalado correctamente."
-    else
-        print_error "Error al instalar $DEP."
-        exit 1
-    fi
-    sleep 2
-done
-
-# Configurar SSH para vulnerabilidades simuladas
-print_info "Modificando configuración de SSH para simular vulnerabilidades..."
-sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
+# Instalación de las dependencias necesarias
+print_info "Instalando las dependencias necesarias para el HoneyPot..."
+sleep 5
+# OPENSSH
+apt install openssh-server -y
 if [ $? -eq 0 ]; then
-    print_success "Configuración de SSH modificada correctamente."
+    print_sucess "OpenSSH instalado..."
 else
-    print_error "Error al modificar la configuración de SSH."
+    print_error "Error al instalar OpenSSH..."
     exit 1
 fi
+sleep 5
+
+systemctl start ssh
+systemctl enable ssh
+if [ $? -eq 0 ]; then
+    print_sucess "OpenSSH activado..."
+else
+    print_error "Error al activar OpenSSH..."
+    exit 1
+fi
+sleep 5
+
+
+apt install nginx -y
+if [ $? -eq 0 ]; then
+    print_sucess "Nginx instalado..."
+else
+    print_error "Error al activar Nginx..."
+    exit 1
+fi
+
+sleep 5
+
+systemctl start nginx
+systemctl enable nginx
+if [ $? -eq 0 ]; then
+    print_sucess "Nginx activado..."
+else
+    print_error "Error al activar Nginx..."
+    exit 1
+fi
+sleep 5
+
+
+apt install rsyslog -y
+if [ $? -eq 0 ]; then
+    print_sucess "Rsyslog instalado..."
+else
+    print_error "Error al instalar Rsyslog..."
+    exit 1
+fi
+sleep 5
+
+systemctl start rsyslog
+systemctl enable rsyslog
+if [ $? -eq 0 ]; then
+    print_sucess "Rsyslog activado..."
+else
+    print_error "Error al activar Rsyslog..."
+    exit 1
+fi
+sleep 5
+
+
+apt install ufw -y
+if [ $? -eq 0 ]; then
+    print_sucess "UFW instalado..."
+else
+    print_error "Error al instalar UFW..."
+    exit 1
+fi
+sleep 5
+
+pct exec $vID_CONTENEDOR -- systemctl start ufw
+pct exec $vID_CONTENEDOR -- systemctl enable ufw
+if [ $? -eq 0 ]; then
+    print_sucess "UFW activado..."
+else
+    print_error "Error al activar UFW..."
+    exit 1
+fi
+sleep 5
+
+apt install vsftpd -y
+if [ $? -eq 0 ]; then
+    print_sucess "Vsftpd instalado..."
+else
+    print_error "Error al instalar Vsftpd..."
+    exit 1
+fi
+sleep 5
+
+pct exec $vID_CONTENEDOR -- systemctl start vsftpd
+pct exec $vID_CONTENEDOR -- systemctl enable vsftpd
+if [ $? -eq 0 ]; then
+    print_sucess "Vsftpd activado..."
+else
+    print_error "Error al activar Vsftpd..."
+    exit 1
+fi
+sleep 5
+
+apt install mariadb-server -y
+if [ $? -eq 0 ]; then
+    print_sucess "Mariadb instalado..."
+else
+    print_error "Error al instalar Mariadb..."
+    exit 1
+fi
+sleep 5
+
+pct exec $vID_CONTENEDOR -- systemctl start mariadb
+pct exec $vID_CONTENEDOR -- systemctl enable mariadb
+if [ $? -eq 0 ]; then
+    print_sucess "Mariadb activar..."
+else
+    print_error "Error al activar Mariadb..."
+    exit 1
+fi
+sleep 5
+
+apt install git -y
+if [ $? -eq 0 ]; then
+    print_sucess "Git instalado..."
+else
+    print_error "Error al instalar Git..."
+    exit 1
+fi
+sleep 5
+
+apt install tcpdump -y
+if [ $? -eq 0 ]; then
+    print_sucess "Tcpdump instalado..."
+else
+    print_error "Error al instalar Tcpdump..."
+    exit 1
+fi
+sleep 5
+
+apt install curl -y
+if [ $? -eq 0 ]; then
+    print_sucess "Curl instalado..."
+else
+    print_error "Error al instalar Curl..."
+    exit 1
+fi
+sleep 5
+
+
+# Modificación del fichero SSH para hacerlo parecer vulnerable
+print_info "Modificando configuraciones del archivo sshd_config para simular vulnerabilidades ..."
+
+pct exec $vID_CONTENEDOR -- sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+pct exec $vID_CONTENEDOR -- sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
+pct exec $vID_CONTENEDOR -- sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
+
+if [ $? -eq 0 ]; then
+    print_sucess "Configuración vulnerable de SSH creada..."
+else
+    print_error "Erro al configurar SSH..."
+    exit 1
+fi
+
 
 EOF
-
-print_success "Configuración del contenedor completada correctamente."
