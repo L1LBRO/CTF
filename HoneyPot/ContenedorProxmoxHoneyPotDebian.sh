@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # EJECUCIÓN REMOTA
-    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/HoneyPotDebianDiferentesServicios.sh | bash
+    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/ContenedorProxmoxHoneyPotDebian.sh | bash
 
 
 # Mensajes
