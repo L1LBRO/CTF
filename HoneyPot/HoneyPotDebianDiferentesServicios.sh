@@ -7,11 +7,24 @@ YELLOW='\033[1;33m'
 BLUE='\033[1;34m'
 NC='\033[0m' # Sin color
 
-function print_message() {
+function print_info() {
     echo -e "${YELLOW}[INFO]${NC} $1"
 }
 
+function print_infoG() {
+    echo -e "${GREEN}[FINALIZADO]${NC} $1"
+}
+
+function print_infoR() {
+    echo -e "${RED}[FALLO]${NC} $1"
+}
+
+function print_infoB() {
+    echo -e "${YELLOW}[ACCIONES]${NC} $1"
+}
+
 # ACTUALIZAR LISTA DE CONTENEDORES
+  print_info()
   print_message "Actualizando la lista de plantillas de contenedores..."
   pveam update
 
@@ -41,8 +54,11 @@ function print_message() {
 
 # ACTUALIZAR EL SISTEMA
     print_message "Actualizando el sistema dentro del contenedor..."
-    apt update && apt upgrade -y
-    print_message "Sistema actualizado..."
+    apt update
+    if [ $? -eq 0 ]; then
+        
+    apt upgrade -y
+    
 
 # INSTALAR LOS PROGRAMAS NECESARIOS
     print_message "Descargando servicios necesarios para el correcto funcionamiento del honeypot..."
