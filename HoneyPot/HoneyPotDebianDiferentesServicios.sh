@@ -64,6 +64,8 @@ fi
 # INICIANDO EL CONTENEDOR
   print_info "Iniciando el contenedor Debian..."
   pct start $ID_CONTENEDOR
+  
+  
   if [ $? -eq 0 ]; then
     print_ejecución_correcta "Contenedor $ID_CONTENEDOR Iniciado Correctamente..."
  else
