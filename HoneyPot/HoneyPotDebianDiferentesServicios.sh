@@ -12,15 +12,11 @@ function print_info() {
 }
 
 function print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    echo -e "${RED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
 }
 
 function print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-function print_attention() {
-    echo -e "${BLUE}[ATENCIÓN]${NC} $1"
+    echo -e "${GREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
 
 # Actualizar lista de plantillas
@@ -73,23 +69,5 @@ if [ $? -eq 0 ]; then
     print_success "Contenedor iniciado correctamente."
 else
     print_error "Error al iniciar el contenedor. Abortando..."
-    exit 1
-fi
-
-# Actualización del sistema dentro del contenedor
-print_info "Actualizando el sistema dentro del contenedor..."
-pct exec $ID_CONTENEDOR -- apt update
-if [ $? -eq 0 ]; then
-    print_success "Repositorios actualizados correctamente."
-else
-    print_error "Error al actualizar repositorios. Abortando..."
-    exit 1
-fi
-
-pct exec $ID_CONTENEDOR -- apt upgrade -y
-if [ $? -eq 0 ]; then
-    print_success "Sistema actualizado correctamente."
-else
-    print_error "Error al actualizar el sistema. Abortando..."
     exit 1
 fi
