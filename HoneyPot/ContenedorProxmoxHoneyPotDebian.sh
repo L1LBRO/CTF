@@ -25,7 +25,7 @@ function print_success() {
 
 # Actualizar lista de plantillas
 print_info "Actualizando la lista de plantillas de contenedores..."
-sleep 5
+sleep 2
 pveam update
 if [ $? -eq 0 ]; then
     print_success "Lista de plantillas actualizada correctamente..."
@@ -33,7 +33,7 @@ else
     print_error "Error al actualizar la lista de plantillas. Abortando..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 # Variables
 vID_CONTENEDOR=112
@@ -44,7 +44,8 @@ vPASSWORD="P@ssw0rd!"
 
 # Descargar la plantilla Debian 12
 print_info "Descargando la plantilla de Debian 12..."
-sleep 5
+sleep 2
+
 pveam download local $vTEMPLATE
 if [ $? -eq 0 ]; then
     print_success "Plantilla descargada correctamente."
@@ -52,11 +53,11 @@ else
     print_error "Error al descargar la plantilla. Abortando..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 # Crear el contenedor
 print_info "Creando el contenedor Debian..."
-sleep 5
+sleep 2
 pct create $vID_CONTENEDOR local:vztmpl/$vTEMPLATE \
     --hostname servidores-importantes \
     --storage $vSTORAGE \
@@ -71,11 +72,11 @@ else
     print_error "Error al crear el contenedor. Abortando..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 # Iniciar el contenedor
 print_info "Iniciando el contenedor Debian..."
-sleep 5
+sleep 2
 pct start $vID_CONTENEDOR
 if [ $? -eq 0 ]; then
     print_success "Contenedor iniciado correctamente."
@@ -83,10 +84,15 @@ else
     print_error "Error al iniciar el contenedor. Abortando..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 # Actualizar el contenedor
 print_info "Entrando al contenedor Debian para su configuración..."
+sleep 4
 pct enter $vID_CONTENEDOR
+
+apt update
+apt upgrade -y
+apt install curl
 curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/CrearConfigurarDebianHoneyPot.sh | bash
-sleep 5
+
