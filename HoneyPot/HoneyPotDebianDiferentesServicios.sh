@@ -64,16 +64,11 @@ pct create $ID_CONTENEDOR local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst \
 # INICIANDO EL CONTENEDOR
 print_info "Iniciando el contenedor Debian..."
 pct start $ID_CONTENEDOR 
-  if [ $? -eq 0 ]; then
-    print_ejecución_correcta "Contenedor $ID_CONTENEDOR Iniciado Correctamente..."
- else
-     print_error "La Inicialización ha Fallado Se Va a Parar el Script..."
-     exit
-fi
 
 # CONEXIÓN AL DEBIAN
 print_info "Iniciando Los Comandos De Configuración..."
-pct exec $ID_CONTENEDOR
+pct exec $ID_CONTENEDOR -- apt update
+pct exec $ID_CONTENEDOR -- apt upgrade -y
 
 # ACTUALIZAR EL SISTEMA
     print_message "Actualizando el sistema dentro del contenedor..."
