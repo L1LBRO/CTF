@@ -1,3 +1,10 @@
+#Para ejecucción remota
+    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/HoneyPotDebianDiferentesServicios.sh | bash
+
+
+
+
+
 #!/bin/bash
 
 # Mensajes
@@ -24,7 +31,6 @@ function print_infoB() {
 }
 
 # ACTUALIZAR LISTA DE CONTENEDORES
-  print_info()
   print_message "Actualizando la lista de plantillas de contenedores..."
   pveam update
 
