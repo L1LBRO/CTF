@@ -14,7 +14,7 @@ function print_info() {
 }
 
 function print_error() {
-    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
+    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL SCRIPT]${NC} $1"
 }
 
 function print_success() {
@@ -214,10 +214,10 @@ sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
 
 if [ $? -eq 0 ]; then
     print_success 
-    echo "Configuración vulnerable de SSH creada..."
+    echo "Configuración vulnerable en sshd creada..."
 else
     print_error 
-    echo "Error al configurar SSH..."
+    echo "Error al configurar sshd..."
     exit 1
 fi
 
@@ -247,7 +247,14 @@ else
     print_error
     echo "Se ha producido un error en la redirección..."
     exit 1
-    
+sleep 4
+
+print_info
+echo "Creando fichero con contraseñas en texto plano para simular los usuarios que se pueden conectar al SSH"
+
+
+
+
 print_info
 echo "Creando un servicio de systemd para monitorizar el tráfico de SSH..."
 bash -c 'cat << EOT > /etc/systemd/system/custom-monitor.service
@@ -273,6 +280,15 @@ else
     print_error
     echo "Se ha producido un error en la creación del servicio..."
     exit 1
+sleep 4
 
+print_success
+echo "Se ha creado una configuración de SSH vulnerable para el HoneyPot..."
+sleep 4
 
+print_info
+echo "Se procederá a configurar una servicio web vulnerable..."
+sleep 2
 
+print_info
+echo "Configurando página web"
