@@ -18,12 +18,19 @@ function print_info() {
 }
 
 function print_error() {
-    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL CÓDIGO]${NC} $1"
+    echo -e "${cRED}[ERROR EN LA EJECUCIÓN DEL SCRIPT]${NC} $1"
 }
 
 function print_success() {
     echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
+
+# Verificar si el usuario es root
+if [ "$EUID" -ne 0 ]; then
+print_error
+echo "Por favor, ejecuta este script como root."
+exit 1
+fi
 
 # Actualizar lista de plantillas
 print_info "Actualizando la lista de plantillas de contenedores..."
