@@ -21,6 +21,10 @@ function print_success() {
     echo -e "${cGREEN}[COMANDOS EJECUTADOS CORRECTAMENTE]${NC} $1"
 }
 
+function print_atention() {
+    echo -e "${cBLUE}[ATENCIÓN NAVEGANTE]${NC} $1"
+}
+
 print_info 
 echo "Iniciando configuración de Debian como Honeypot..."
 sleep 2
@@ -195,7 +199,11 @@ else
 fi
 sleep 4
 
-# Modificación del fichero SSH para hacerlo parecer vulnerable
+# Crear configuración vulnerable en SSH
+print_atention
+echo "Se va a proceder a configurar SSH de manera que sea vulnerable y atrapar a los INSIDERS de la empresa"
+sleep 5
+
 print_info 
 echo "Modificando configuraciones del archivo sshd_config para simular vulnerabilidades ..."
 sleep 2
@@ -213,7 +221,58 @@ else
     exit 1
 fi
 
-#print_info
-#echo "Redirigiendo la escucha del Puerto SSH (22) al puerto (2222)"
-#sleep 2
-#echo "Instalado NF Tables para realizar la acción"
+print_info
+echo "Redirigiendo la escucha del Puerto SSH (22) al puerto (2222)..."
+sleep 2
+print_info
+echo "Instalado IP Tables para realizar la acción..."
+apt install iptables
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "IP Tables instalado correctamente..."
+else
+    print_error
+    echo "Se ha producido un error en la instalación..."
+    exit 1
+
+print_info
+echo "Redirigiendo la escucha del puerto 22 al puerto 2222..."
+iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 2222
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Redirección creada correctamente..."
+else
+    print_error
+    echo "Se ha producido un error en la redirección..."
+    exit 1
+    
+print_info
+echo "Creando un servicio de systemd para monitorizar el tráfico de SSH..."
+bash -c 'cat << EOT > /etc/systemd/system/custom-monitor.service
+[Unit]
+Description=Custom Monitor for SSH on Port 2222
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash -c '\''while :; do netstat -tuln | grep -q ":2222" || echo "Port 2222 is down"; sleep 10; done'\''
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOT'
+systemctl enable custom-monitor
+systemctl start custom-monitor
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Servicio en systemd creado y establecido correctamente..."
+else
+    print_error
+    echo "Se ha producido un error en la creación del servicio..."
+    exit 1
+
+
+
