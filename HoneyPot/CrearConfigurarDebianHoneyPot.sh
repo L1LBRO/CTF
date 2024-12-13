@@ -26,7 +26,7 @@ sleep 2
 # Instalación de las dependencias necesarias
 print_info 
 echo "Instalando las dependencias necesarias para el HoneyPot..."
-sleep 5
+sleep 2
 # OPENSSH
 apt install openssh-server -y
 if [ $? -eq 0 ]; then
@@ -37,7 +37,7 @@ else
     echo "Error al instalar OpenSSH..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 systemctl start ssh
 systemctl enable ssh
@@ -49,7 +49,7 @@ else
     echo "Error al activar OpenSSH..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 
 apt install nginx -y
@@ -62,7 +62,7 @@ else
     exit 1
 fi
 
-sleep 5
+sleep 4
 
 systemctl start nginx
 systemctl enable nginx
@@ -74,7 +74,7 @@ else
     echo "Error al activar Nginx..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 
 apt install rsyslog -y
@@ -86,7 +86,7 @@ else
     echo "Error al instalar Rsyslog..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 systemctl start rsyslog
 systemctl enable rsyslog
@@ -98,7 +98,7 @@ else
     echo "Error al activar Rsyslog..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 
 apt install ufw -y
@@ -110,7 +110,7 @@ else
     echo "Error al instalar UFW..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 systemctl start ufw
 systemctl enable ufw
@@ -122,7 +122,7 @@ else
     echo "Error al activar UFW..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 apt install vsftpd -y
 if [ $? -eq 0 ]; then
@@ -133,7 +133,7 @@ else
     echo "Error al instalar Vsftpd..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 systemctl start vsftpd
 systemctl enable vsftpd
@@ -145,7 +145,7 @@ else
     echo "Error al activar Vsftpd..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 apt install mariadb-server -y
 if [ $? -eq 0 ]; then
@@ -156,7 +156,7 @@ else
     echo "Error al instalar Mariadb..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 systemctl start mariadb
 systemctl enable mariadb
@@ -168,7 +168,7 @@ else
     echo "Error al activar Mariadb..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 apt install git -y
 if [ $? -eq 0 ]; then
@@ -179,7 +179,7 @@ else
     echo "Error al instalar Git..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 apt install tcpdump -y
 if [ $? -eq 0 ]; then
@@ -190,11 +190,12 @@ else
     echo "Error al instalar Tcpdump..."
     exit 1
 fi
-sleep 5
+sleep 4
 
 # Modificación del fichero SSH para hacerlo parecer vulnerable
 print_info 
 echo "Modificando configuraciones del archivo sshd_config para simular vulnerabilidades ..."
+sleep 2
 
 sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
@@ -208,3 +209,8 @@ else
     echo "Error al configurar SSH..."
     exit 1
 fi
+
+#print_info
+#echo "Redirigiendo la escucha del Puerto SSH (22) al puerto (2222)"
+#sleep 2
+#echo "Instalado NF Tables para realizar la acción"
