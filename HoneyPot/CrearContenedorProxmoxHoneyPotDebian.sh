@@ -3,7 +3,7 @@
 #!/bin/bash
 
 # EJECUCIÓN REMOTA
-    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/ContenedorProxmoxHoneyPotDebian.sh | bash
+    # curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/CrearContenedorProxmoxHoneyPotDebian.sh | bash
 
 
 # Mensajes
