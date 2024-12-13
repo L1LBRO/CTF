@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Ejecución Remota
+#    curl -sL https://raw.githubusercontent.com/L1LBRO/CTF/refs/heads/main/HoneyPot/CrearConfigurarDebianHoneyPot.sh | bash
+
 export cRED='\033[0;31m'
 export cGREEN='\033[0;32m'
 export cYELLOW='\033[1;33m'
