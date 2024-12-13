@@ -211,6 +211,7 @@ sleep 2
 sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
+sed -i -e 's/#PermitEmptyPasswords no/PermitEmptyPasswords yes/g' /etc/ssh/sshd_config
 
 if [ $? -eq 0 ]; then
     print_success 
@@ -250,9 +251,9 @@ else
 sleep 4
 
 print_info
-echo "Creando fichero con contraseñas en texto plano para simular los usuarios que se pueden conectar al SSH"
+echo "Configurando fichero con la conexión a la BD que se configurará posteriormente para conexión de los usuarios"
 
-
+sed -i -e 's/#UsePam no/UsePam yes/g' /etc/ssh/sshd_config
 
 
 print_info
