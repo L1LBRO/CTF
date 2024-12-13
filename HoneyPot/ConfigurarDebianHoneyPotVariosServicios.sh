@@ -211,7 +211,7 @@ sleep 2
 sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#PasswordAuthentication yes/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 sed -i -e 's/#LogLevel INFO/LogLevel VERBOSE/g' /etc/ssh/sshd_config
-sed -i -e 's/#PermitEmptyPasswords no/PermitEmptyPasswords yes/g' /etc/ssh/sshd_config
+sed -i -e 's/#PermitEmptyPasswords no/PermitEmptyPasswords no/g' /etc/ssh/sshd_config
 
 if [ $? -eq 0 ]; then
     print_success 
@@ -251,10 +251,36 @@ else
 sleep 4
 
 print_info
-echo "Configurando fichero con la conexión a la BD que se configurará posteriormente para conexión de los usuarios"
+echo "Configurando fichero con la conexión a la BD que se configurará posteriormente para conexión de los usuarios..."
+sleep 2
 
+print_info
+echo "Cambiando el fichero sshd..."
 sed -i -e 's/#UsePam no/UsePam yes/g' /etc/ssh/sshd_config
 
+if [ $? -eq 0 ]; then
+    print_success 
+    echo "Fichero sshd configurado..."
+else
+    print_error 
+    echo "Error al configurar sshd..."
+    exit 1
+fi
+sleep 4
+
+print_info
+echo "Editando el fichero pamd.d"
+sed -i '$ a auth required pam_mysql.so user=bd passwd=P@ssw0rd\! host=127.0.0.1 db=usuarios_conexiones table=users usercolumn=username passwdcolumn=password' /etc/pam.d/sshd
+
+if [ $? -eq 0 ]; then
+    print_success 
+    echo "Fichero pam.d configurado posteriormente se creará la base de datos con los usuarios permitidos..."
+else
+    print_error 
+    echo "Error al configurar sshd..."
+    exit 1
+fi
+sleep 4
 
 print_info
 echo "Creando un servicio de systemd para monitorizar el tráfico de SSH..."
@@ -283,13 +309,125 @@ else
     exit 1
 sleep 4
 
-print_success
-echo "Se ha creado una configuración de SSH vulnerable para el HoneyPot..."
+systemctl restar sshd
+systemctl restar ssh
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Se ha creado correctamente un servicio SSH vulnerable..."
+else
+    print_error
+    echo "Se ha producido un error en el reinicio del servicio ssh..."
+    exit 1
 sleep 4
+
 
 print_info
 echo "Se procederá a configurar una servicio web vulnerable..."
 sleep 2
 
+print_info 
+echo "Clonando el repositorio de la página web..."
+sleep 2
+
+git clone https://github.com/L1LBRO/CTF.git
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Repositorio clonado correctamente..."
+else
+    print_error
+    echo "Se ha producido un error en la clonación del repositorio..."
+    exit 1
+sleep 4
+
 print_info
-echo "Configurando página web"
+echo "Copiando página web del repositorio a /var/www/html"
+sleep 2
+mkdir /var/www/html/web-empresita
+mv CTF/HoneyPot/HoneyPotPage/* /var/www/html/web-empresita
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Se ha copiado correctamente..."
+else
+    print_error
+    echo "Fallo al momento de copiar la página web..."
+    exit 1
+sleep 4
+
+print_info
+echo "Eliminando repositorio para no dejar rastro ;)"
+rm -r CTF
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Se ha borrado correctamente..."
+else
+    print_error
+    echo "Fallo al momento de borrar el repositorio eliminarlo manualmente después..."
+fi
+sleep 4
+
+print_info
+echo "Aplicando la nueva página web"
+
+bash -c 'cat << EOT > /etc/nginx/sites-available/web-empresita
+server {
+    listen 80;  # Puerto en el que escucha el servidor
+    server_name ejemplo.com www.ejemplo.com;  # Dominio de tu página web
+
+    root /var/www/html/web-empresita;  # Directorio donde se encuentran los archivos de la página
+    index index.html index.htm index.php;  # Archivos predeterminados de índice
+
+    access_log /var/log/nginx/ejemplo_access.log;  # Log de acceso
+    error_log /var/log/nginx/ejemplo_error.log;    # Log de errores
+
+    # Configuración para manejar solicitudes
+    location / {
+        try_files $uri $uri/ =404;  # Si no se encuentra el archivo, se devuelve un 404
+    }
+
+    # Configuración para manejar PHP (si es necesario)
+    # Si deseas usar PHP, debes tener configurado PHP-FPM y descomentar esta sección
+
+    # location ~ \.php$ {
+    #     include snippets/fastcgi-php.conf;
+    #     fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;  # Asegúrate de que la versión de PHP coincida
+    #     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    #     include fastcgi_params;
+    # }
+
+    # Seguridad adicional
+    location ~ /\.ht {
+        deny all;  # Niega el acceso a archivos ocultos (.htaccess, etc.)
+    }
+}
+EOT'
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Fichero web-empresita creado correctamente..."
+else
+    print_error
+    echo "Fallo al momento de crear el fichero /etc/nginx/sites-available/web-empresita..."
+    echo "Crear el fichero de manera de manual o cambiar el default"
+fi
+sleep 4
+
+
+sudo ln -s /etc/nginx/sites-available/web-empresita /etc/nginx/sites-enabled/
+
+
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Fichero default editado correctamente..."
+else
+    print_error
+    echo "Fallo al momento de editar el /etc/nginx/sites-available/default..."
+    echo "Cambiar el fichero de manera manual"
+fi
+sleep 4
+
+
+
