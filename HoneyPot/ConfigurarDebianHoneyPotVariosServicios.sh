@@ -35,7 +35,7 @@ print_info
 echo "Instalando las dependencias necesarias para el HoneyPot..."
 sleep 2
 for service in openssh-server nginx rsyslog ufw vsftpd mariadb-server git tcpdump; do
-    apt install -y "$service"
+    apt install "$service" -y
     if [ $? -eq 0 ]; then
         print_success "$service instalado..."
     else
