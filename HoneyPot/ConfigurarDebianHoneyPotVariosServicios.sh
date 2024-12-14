@@ -44,10 +44,11 @@ for service in openssh-server nginx rsyslog ufw vsftpd mariadb-server git tcpdum
     fi
     sleep 2
 done
+
 sleep 2
-for service in ssh nginx rsyslog ufw vsftpd mariadb-server; do
-    systemctl start "$service"
-    systemctl enable "$service"
+for on in ssh nginx rsyslog ufw vsftpd mariadb-server; do
+    systemctl start "$on"
+    systemctl enable "$on"
     if [ $? -eq 0 ]; then
         print_success "$service activado..."
     else
