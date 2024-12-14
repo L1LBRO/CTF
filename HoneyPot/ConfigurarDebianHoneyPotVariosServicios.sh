@@ -42,6 +42,9 @@ for service in openssh-server nginx rsyslog ufw vsftpd mariadb-server git tcpdum
         print_error "Error al instalar $service..."
         exit 1
     fi
+    sleep 2
+    done
+for service in sshd nginx rsyslog ufw vsftpd mariadb-server; do
     systemctl start "$service"
     systemctl enable "$service"
     if [ $? -eq 0 ]; then
