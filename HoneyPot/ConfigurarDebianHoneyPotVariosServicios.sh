@@ -34,170 +34,25 @@ sleep 2
 print_info 
 echo "Instalando las dependencias necesarias para el HoneyPot..."
 sleep 2
-# OPENSSH
-apt install openssh-server -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "OpenSSH instalado..."
-else
-    print_error 
-    echo "Error al instalar OpenSSH..."
-    exit 1
-fi
-sleep 4
+for service in openssh-server nginx rsyslog ufw vsftpd mariadb-server git tcpdump; do
+    apt install -y "$service"
+    if [ $? -eq 0 ]; then
+        print_success "$service instalado..."
+    else
+        print_error "Error al instalar $service..."
+        exit 1
+    fi
+    systemctl start "$service"
+    systemctl enable "$service"
+    if [ $? -eq 0 ]; then
+        print_success "$service activado..."
+    else
+        print_error "Error al activar $service..."
+        exit 1
+    fi
+    sleep 2
+    done
 
-systemctl start ssh
-systemctl enable ssh
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "OpenSSH activado..."
-else
-    print_error 
-    echo "Error al activar OpenSSH..."
-    exit 1
-fi
-sleep 4
-
-
-apt install nginx -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Nginx instalado..."
-else
-    print_error 
-    echo "Error al activar Nginx..."
-    exit 1
-fi
-
-sleep 4
-
-systemctl start nginx
-systemctl enable nginx
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Nginx activado..."
-else
-    print_error 
-    echo "Error al activar Nginx..."
-    exit 1
-fi
-sleep 4
-
-
-apt install rsyslog -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Rsyslog instalado..."
-else
-    print_error 
-    echo "Error al instalar Rsyslog..."
-    exit 1
-fi
-sleep 4
-
-systemctl start rsyslog
-systemctl enable rsyslog
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Rsyslog activado..."
-else
-    print_error 
-    echo "Error al activar Rsyslog..."
-    exit 1
-fi
-sleep 4
-
-
-apt install ufw -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "UFW instalado..."
-else
-    print_error 
-    echo "Error al instalar UFW..."
-    exit 1
-fi
-sleep 4
-
-systemctl start ufw
-systemctl enable ufw
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "UFW activado..."
-else
-    print_error 
-    echo "Error al activar UFW..."
-    exit 1
-fi
-sleep 4
-
-apt install vsftpd -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Vsftpd instalado..."
-else
-    print_error 
-    echo "Error al instalar Vsftpd..."
-    exit 1
-fi
-sleep 4
-
-systemctl start vsftpd
-systemctl enable vsftpd
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Vsftpd activado..."
-else
-    print_error 
-    echo "Error al activar Vsftpd..."
-    exit 1
-fi
-sleep 4
-
-apt install mariadb-server -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Mariadb instalado..."
-else
-    print_error 
-    echo "Error al instalar Mariadb..."
-    exit 1
-fi
-sleep 4
-
-systemctl start mariadb
-systemctl enable mariadb
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Mariadb activado..."
-else
-    print_error 
-    echo "Error al activar Mariadb..."
-    exit 1
-fi
-sleep 4
-
-apt install git -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Git instalado..."
-else
-    print_error 
-    echo "Error al instalar Git..."
-    exit 1
-fi
-sleep 4
-
-apt install tcpdump -y
-if [ $? -eq 0 ]; then
-    print_success 
-    echo "Tcpdump instalado..."
-else
-    print_error 
-    echo "Error al instalar Tcpdump..."
-    exit 1
-fi
-sleep 4
 
 # Crear configuración vulnerable en SSH
 print_atention
@@ -374,34 +229,38 @@ echo "Aplicando la nueva página web"
 
 bash -c 'cat << EOT > /etc/nginx/sites-available/web-empresita
 server {
-    listen 80;  # Puerto en el que escucha el servidor
-    server_name ejemplo.com www.ejemplo.com;  # Dominio de tu página web
+        listen 80 default_server;
+        listen [::]:80 default_server;
 
-    root /var/www/html/web-empresita;  # Directorio donde se encuentran los archivos de la página
-    index index.html index.htm index.php;  # Archivos predeterminados de índice
+        root /var/www/html/web-empresita;
 
-    access_log /var/log/nginx/ejemplo_access.log;  # Log de acceso
-    error_log /var/log/nginx/ejemplo_error.log;    # Log de errores
+        index index.html index.htm index.nginx-debian.html;
 
-    # Configuración para manejar solicitudes
-    location / {
-        try_files $uri $uri/ =404;  # Si no se encuentra el archivo, se devuelve un 404
-    }
+        server_name _;
 
-    # Configuración para manejar PHP (si es necesario)
-    # Si deseas usar PHP, debes tener configurado PHP-FPM y descomentar esta sección
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+                # proxy_pass http://localhost:8080;
+                # proxy_http_version 1.1;
+                # proxy_set_header Upgrade $http_upgrade;
+                # proxy_set_header Connection upgrade;
+                # proxy_set_header Host $host;
+                # proxy_cache_bypass $http_upgrade;
+        }
 
-    # location ~ \.php$ {
-    #     include snippets/fastcgi-php.conf;
-    #     fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;  # Asegúrate de que la versión de PHP coincida
-    #     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    #     include fastcgi_params;
-    # }
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #       include snippets/fastcgi-php.conf;
+        #
+        #       # With php7.0-cgi alone:
+        #       fastcgi_pass 127.0.0.1:9000;
+        #       # With php7.0-fpm:
+        #       fastcgi_pass unix:/run/php/php7.0-fpm.sock;
+        #}
 
-    # Seguridad adicional
-    location ~ /\.ht {
-        deny all;  # Niega el acceso a archivos ocultos (.htaccess, etc.)
-    }
 }
 EOT'
 
@@ -411,23 +270,56 @@ if [ $? -eq 0 ]; then
 else
     print_error
     echo "Fallo al momento de crear el fichero /etc/nginx/sites-available/web-empresita..."
-    echo "Crear el fichero de manera de manual o cambiar el default"
+    echo "Crear el fichero de manera de manual o cambiar el default..."
 fi
 sleep 4
 
+print_info
+echo "Configurando página web como principal..."
+sleep 2
 
-sudo ln -s /etc/nginx/sites-available/web-empresita /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/web-empresita /etc/nginx/sites-enabled/web-empresita
 
 
 if [ $? -eq 0 ]; then
     print_success
-    echo "Fichero default editado correctamente..."
+    echo "Página web establecida correctamenta..."
 else
     print_error
-    echo "Fallo al momento de editar el /etc/nginx/sites-available/default..."
-    echo "Cambiar el fichero de manera manual"
+    echo "Fallo al establecer el link simbólico al /etc/nginx/sites-enabled/..."
+    echo "Ejecutar el comando de manera manual..."
 fi
 sleep 4
 
+print_info
+echo "Borrando fichero defaul..."
+sleep 2
+
+rm /etc/nginx/sites-enabled/default
+if [ $? -eq 0 ]; then
+    print_success
+    echo "Fichero default borrado..."
+else
+    print_error
+    echo "Fallo al borrar el fichero default..."
+    echo "Es posible que la página web no se muestre hasta que se elimine el fichero default..."
+    echo "Deberá borrarse manualmente..."
+fi
+sleep 4
+
+print_success
+echo "Configuración web establecida correctamente..."
+sleep 2
+
+#print_info
+#echo "Configurando MariaDB"
+
+# Variables para MariaDB
+
+#vDB_NAME="usuarios"
+#vDB_USER="root"
+#vDB_PASSWORD="P@ssw0rd!"
+#vROOT_PASSWORD="P@ssw0rd!"
+#vCONFIG_FILE="/etc/mysql/my.cnf"
 
 
